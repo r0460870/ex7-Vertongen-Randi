@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>title</title>
+        <text> kan even duren</text>
+        <meta charset="UTF-8">
+
+              <link rel="shortcut icon" href="">
+        <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js">
+        </script>
+
+    </head>
+    <body>
+        <div>
+            <table id="tab">
+            <tr>
+              <th>Naam</th>
+              <th>Location</th>
+              <th>Mac_adres</th>
+              <th>id file</th>
+              <th>first record</th>
+              <th>Last Record</th>
+              </tr>
+            </table>
+        </div>
+        <script>
+
+            $.ajax({
+                "url": "https://web-ims.thomasmore.be/datadistribution/API/2.0/drones?format=json",
+                "headers": {
+                    "authorization": "Basic aW1zOno1MTJtVDRKeVgwUExXZw=="},
+                "method": 'GET',
+                "dataType": "json"
+
+            }).done(function (drones) {
+
+                drones.forEach(function (drones) {
+                    $.ajax({
+                        "url": "https://web-ims.thomasmore.be/datadistribution/API/2.0/drones/" + drones.id + "?format=json",
+                        "method": "GET",
+                        "datatype": "json",
+                        "headers": {
+                            "authorization": "Basic aW1zOno1MTJtVDRKeVgwUExXZw=="
+                        }
+                    }).done(function (dronesp) {
+                        $.ajax({
+                            "url": "https://web-ims.thomasmore.be/datadistribution/API/2.0/files?drone_id.is=" + dronesp.id + "&format=json",
+                            "method": "GET",
+                            "datatype": "json",
+                            "headers": {
+                                "authorization": "Basic aW1zOno1MTJtVDRKeVgwUExXZw=="
+                            }
+                        }).done(function (filedet) {
+                            filedet.forEach(function (filedet) {
+                                $.ajax({
+                                    "url": "https://web-ims.thomasmore.be/datadistribution/API/2.0/files/" + filedet.id + "?format=json",
+                                    "method": "GET",
+                                    "datatype": "json",
+                                    "headers": {
+                                        "authorization": "Basic aW1zOno1MTJtVDRKeVgwUExXZw=="
+                                    }
+                                }).done(function (filedetails) {
+                                    $('#tab').append('<tr>' +
+                                            '<td>' + dronesp.name + '</td>' +
+                                            '<td>' + dronesp.location + '</td>' +
+                                            '<td>' + dronesp.mac_address + '</td>' +
+                                            '<td>' + filedet.id + '</td>' +
+                                            '<td>' + filedetails.date_first_record + '</td>' +
+                                            '<td>' + filedetails.date_last_record + '</td></tr>');
+                                });
+                            });
+
+                        });
+                    });
+                });
+            });
+
+
+        </script>
+
+    </body>
+</html>
